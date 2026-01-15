@@ -71,18 +71,18 @@ def setup_environment():
 # training
 
 def train():
-    print("[Train] Initializing YOLOv8 Nano...")
+    print("[Train] Initializing YOLOv8 Small...")
     
     # Load model
-    model = YOLO('yolov8n.pt') 
+    model = YOLO('yolov8s.pt') 
 
     # Start Training
     # We save directly to Drive (project=SAVE_DIR) so checkpoints are safe instantly.
     results = model.train(
         data=f'{LOCAL_DATASET_DIR}/data.yaml',
         project=SAVE_DIR,        # Saves to /content/drive/.../logs
-        name='mehfooz_run',      # Creates /logs/mehfooz_run/
-        epochs=50,               
+        name='mehfooz_run2',      # Creates /logs/mehfooz_run/
+        epochs=100,               
         imgsz=640,
         batch=16,                # Safe bet for T4 GPU
         patience=10,             # Stop if no improvement
