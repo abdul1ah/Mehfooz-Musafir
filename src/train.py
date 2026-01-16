@@ -35,7 +35,7 @@ def setup_environment():
         if not os.path.exists(LOCAL_DATASET_DIR):
             os.makedirs(LOCAL_DATASET_DIR)
             
-        print(f"📦 [Setup] Unzipping dataset...")
+        print(f"[Setup] Unzipping dataset...")
         # Unzip quiet (-q) to the local directory
         exit_code = os.system(f'unzip -q "{ZIP_PATH}" -d "{LOCAL_DATASET_DIR}"')
         
@@ -51,7 +51,7 @@ def setup_environment():
     nested_dir = os.path.join(LOCAL_DATASET_DIR, 'dataset')
     
     if os.path.exists(nested_dir) and os.path.isdir(nested_dir):
-        print("🧹 [Setup] Detected nested folder structure. Flattening...")
+        print("[Setup] Detected nested folder structure. Flattening...")
         
         # Move everything from /content/dataset/dataset/* to /content/dataset/*
         for filename in os.listdir(nested_dir):
@@ -80,19 +80,26 @@ def train():
     # We save directly to Drive (project=SAVE_DIR) so checkpoints are safe instantly.
     results = model.train(
         data=f'{LOCAL_DATASET_DIR}/data.yaml',
-        project=SAVE_DIR,        # Saves to /content/drive/.../logs
-        name='mehfooz_run2',      # Creates /logs/mehfooz_run/
-        epochs=100,               
+        project=SAVE_DIR,                # Saves to /content/drive/.../logs
+        name='mehfooz_run3',             # Creates /logs/mehfooz_run/
+        epochs=100,                      
         imgsz=640,
-        batch=16,                # Safe bet for T4 GPU
-        patience=10,             # Stop if no improvement
-        exist_ok=True,           # Overwrite previous run if name is same (or change name)
+        batch=16,                        # Safe bet for T4 GPU
+        patience=10,                     # Stop if no improvement
+        exist_ok=True,                   # Overwrite previous run if name is same (or change name)
         
         # PERFORMANCE & SAVING ARGS
-        amp=True,                # Mixed Precision (fp16) - 2x Speed!
-        save=True,               # Saves last.pt and best.pt every epoch
-        workers=8,               # Number of CPU threads for data loading
-        cache=False              # Set True if you have massive RAM, False for Colab Free Tier
+        amp=True,                        # Mixed Precision (fp16) - 2x Speed!
+        save=True,                       # Saves last.pt and best.pt every epoch
+        workers=8,                       # Number of CPU threads for data loading
+        cache=False,                     # Set True if you have massive RAM, False for Colab Free Tier
+
+        # DATA AUGMENTATION ARGS (Added)
+        degrees=15.0,                    # Rotate images ±15 degrees
+        fliplr=0.5,                      # Flip images left-right 50% of the time
+        mixup=0.15,                      # Blend images together (helps small datasets)
+        copy_paste=0.1,                  # Randomly copy objects to new locations
+        mosaic=1.0                       # Mosaic augmentation (default is 1.0, keeping it explicit)
     )
 
     print("[Train] Training Finished.")
@@ -100,6 +107,7 @@ def train():
     # post-training: copy best.pt to a clean weights folder
 
     # Copy the best model to your clean 'weights' folder for easy download
+    # Note: Ensure this path matches the 'name' used above if you want the new file
     best_weight_path = os.path.join(SAVE_DIR, 'mehfooz_run', 'weights', 'best.pt')
     target_path = os.path.join(FINAL_WEIGHTS_DIR, 'best.pt')
 
@@ -110,7 +118,7 @@ def train():
         print("[Save] Done. You can download it now.")
     else:
         print("[Warning] Could not find best.pt to copy.")
-
+        
 if __name__ == '__main__':
     setup_environment()
     train()
