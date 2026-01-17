@@ -22,11 +22,11 @@ def setup_environment():
     Unzips data and fixes the 'Folder-in-a-Folder' problem.
     Ensures data.yaml is always at /content/dataset/data.yaml
     """
-    print(f"🛠️ [Setup] Checking data in {LOCAL_DATASET_DIR}...")
+    print(f"[Setup] Checking data in {LOCAL_DATASET_DIR}...")
 
     # 1. Check if data is already ready (Fast Path)
     if os.path.exists(DATA_YAML):
-        print("✅ [Setup] Data ready and flattened. Skipping unzip.")
+        print("[Setup] Data ready and flattened. Skipping unzip.")
         return
 
     # 2. Unzip if needed
@@ -39,10 +39,10 @@ def setup_environment():
         exit_code = os.system(f'unzip -q "{ZIP_PATH}" -d "{LOCAL_DATASET_DIR}"')
         
         if exit_code != 0:
-            print("❌ [Setup] Unzip failed!")
+            print("[Setup] Unzip failed!")
             sys.exit(1)
     else:
-        print(f"❌ [Setup] Zip file not found at: {ZIP_PATH}")
+        print(f"[Setup] Zip file not found at: {ZIP_PATH}")
         sys.exit(1)
 
     # 3. THE FIX: Flatten the directory structure
@@ -53,7 +53,7 @@ def setup_environment():
     for nested_name in nested_dirs:
         nested_path = os.path.join(LOCAL_DATASET_DIR, nested_name)
         if os.path.exists(nested_path) and os.path.isdir(nested_path):
-            print(f"⚠️ [Setup] Detected nested folder '{nested_name}'. Flattening...")
+            print(f"[Setup] Detected nested folder '{nested_name}'. Flattening...")
             
             # Move everything up one level
             for filename in os.listdir(nested_path):
@@ -70,26 +70,26 @@ def setup_environment():
                 
             # Delete the empty nested folder
             os.rmdir(nested_path)
-            print("✅ [Setup] Flattening complete. Data structure is fixed.")
+            print("[Setup] Flattening complete. Data structure is fixed.")
             break # Stop checking other names if one was found
 
 # --- VALIDATION LOGIC ---
 def validate():
-    print(f"🔍 [Test] Checking model: {WEIGHTS_PATH}")
+    print(f"[Test] Checking model: {WEIGHTS_PATH}")
     
     if not os.path.exists(WEIGHTS_PATH):
-        print(f"❌ [Error] Model not found at: {WEIGHTS_PATH}")
+        print(f"[Error] Model not found at: {WEIGHTS_PATH}")
         return
 
     # Load the model
     model = YOLO(WEIGHTS_PATH)
 
-    print("👨‍🏫 [Test] Starting Final Evaluation on the TEST set...")
+    print("[Test] Starting Final Evaluation on the TEST set...")
 
     # Run Validation on 'test' split
     metrics = model.val(
         data=DATA_YAML,
-        split='test',        # 👈 Forces use of 'test' folder
+        split='test',        #  Forces use of 'test' folder
         project=LOGS_DIR,
         name='mehfooz_final_test_exam',
         exist_ok=True,
@@ -98,12 +98,12 @@ def validate():
 
     # Print Report
     print("\n" + "="*40)
-    print("🏆 FINAL TEST RESULTS")
+    print("FINAL TEST RESULTS")
     print("="*40)
     print(f"Overall mAP50:    {metrics.box.map50:.3f}")
     print(f"Overall mAP50-95: {metrics.box.map:.3f}")
     print("="*40)
-    print(f"📄 Full detailed report saved to: {LOGS_DIR}/mehfooz_final_test_exam")
+    print(f"Full detailed report saved to: {LOGS_DIR}/mehfooz_final_test_exam")
 
 # --- EXECUTE ---
 if __name__ == "__main__":
