@@ -9,10 +9,18 @@
 
 This repository contains the training source code, validation logic, and deployment scripts. The training workflow is architected to utilize **Google Colab (T4 GPU)** for compute while maintaining code versioning locally via **VS Code**.
 
-**Model Performance**
+## Model Performance
 The model was trained on a custom-engineered dataset (merged from multiple sources) to address class imbalance. It achieves production-grade detection rates for the critical safety class ("No Helmet").
 
-**Generalization Check**
+- Primary Success: The system excels at its main task, achieving an 81.1% mAP for detecting "No Helmet" violations on completely new data.
+
+- Safety First: With a Recall of 0.78, the model catches nearly 8 out of 10 offenders, prioritizing the detection of violations over perfect bounding box precision.
+
+- Generalization: The test results closely mirror the validation scores (0.83 vs 0.81), proving the model has not overfit and functions well in diverse, real-world conditions.
+
+- Area for Improvement: Classes like "Half-Faced" (0.65 mAP) and "Full-Faced" (0.69 mAP) show moderate performance, likely due to visual overlaps with valid/invalid helmet types.
+
+## Generalization Check
 To ensure no overfitting occurred, we compared the Training/Validation results against the unseen Test set:
 
 Validation Score (No Helmet): 0.83 mAP
