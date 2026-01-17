@@ -81,7 +81,7 @@ def train():
     results = model.train(
         data=f'{LOCAL_DATASET_DIR}/data.yaml',
         project=SAVE_DIR,                # Saves to /content/drive/.../logs
-        name='mehfooz_run3',             # Creates /logs/mehfooz_run/
+        name='mehfooz_run4',             # Creates /logs/mehfooz_run/
         epochs=100,                      
         imgsz=640,
         batch=16,                        # Safe bet for T4 GPU
